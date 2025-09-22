@@ -10,7 +10,8 @@ Developing a neural network model to perform regression tasks efficiently using 
 
 ## Neural Network Model
 
-<img width="1031" height="793" alt="image" src="https://github.com/user-attachments/assets/4fa8365b-ef40-4a76-a97c-1d837a79f838" />
+<img width="956" height="830" alt="image" src="https://github.com/user-attachments/assets/bd997b0e-d4ca-4cb4-8056-73c57babe4d0" />
+
 
 ## DESIGN STEPS
 
