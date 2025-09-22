@@ -47,34 +47,15 @@ Evaluate the model with the testing data.
 ### Register Number: 212223230137
 
 ```python
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt 
-import torch
-
-data=pd.read_csv('/content/linear.csv')
-x=data.iloc[:,0].values
-y=data.iloc[:,1].values
-
-x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=42)
-
-scaler=StandardScaler()
-x_train=scaler.fit_transform(x_train.reshape(-1, 1))
-x_test=scaler.transform(x_test.reshape(-1, 1))
-
-x_train_tensor=torch.tensor(x_train,dtype=torch.float32)
-y_train_tensor=torch.tensor(y_train,dtype=torch.float32).view(-1,1)
-x_test_tensor=torch.tensor(x_test,dtype=torch.float32)
-y_test_tensor=torch.tensor(y_test,dtype=torch.float32).view(-1,1)
-
-class NeuralNetwork(torch.nn.Module):
+import torch.nn as nn
+class Neural(nn.Module):
   def __init__(self):
     super().__init__()
-    self.fc1=torch.nn.Linear(1,8)
-    self.fc2=torch.nn.Linear(8,12)
-    self.fc3=torch.nn.Linear(12,1)
-    self.relu=torch.nn.ReLU()
+    # Defines the layers based on the image's architecture
+    self.fc1=nn.Linear(1, 8)    # Input (1) -> Hidden Layer 1 (8)
+    self.fc2=nn.Linear(8, 12)   # Hidden Layer 1 (8) -> Hidden Layer 2 (12)
+    self.fc3=nn.Linear(12, 1)   # Hidden Layer 2 (12) -> Output (1)
+    self.relu=nn.ReLU()
     self.history={'loss':[]}
 
   def forward(self,x):
@@ -82,40 +63,24 @@ class NeuralNetwork(torch.nn.Module):
     x=self.relu(self.fc2(x))
     x=self.fc3(x)
     return x
-
-cynthia_brain=NeuralNetwork()
-loss_fn=torch.nn.MSELoss()
-optimizer=torch.optim.RMSprop(cynthia_brain.parameters(),lr=0.001)
-
-def train_model(model, x_train, y_train, loss_fn, optimizer, epochs):
+```
+```python
+ai = Neural()
+criterion=nn.MSELoss()
+optimizer=torch.optim.RMSprop(ai.parameters(),lr=0.001)
+```
+```python
+def train_model(ai,X_train,y_train,criterion,optimizer,epochs=3000):
   for epoch in range(epochs):
-    y_pred = model(x_train)
-    loss = loss_fn(y_pred, y_train)
     optimizer.zero_grad()
+    loss = criterion(ai(X_train),y_train)
     loss.backward()
     optimizer.step()
 
-    model.history['loss'].append(loss.item())
+    ai.history['loss'].append(loss.item())
     if epoch % 200 == 0:
-      print(f'Epoch [{epoch}/{epochs}], Loss: {loss.item():.6f}')
+      print(f"Epoch [{epoch}/{epochs}], Loss: {loss.item():.6f}")
 
-train_model(cynthia_brain, x_train_tensor, y_train_tensor, loss_fn, optimizer,1500)
-
-with torch.no_grad():
-  y_pred = cynthia_brain(x_test_tensor)
-  test_loss = loss_fn(y_pred, y_test_tensor)
-  print(f'Test Loss: {test_loss.item():.6f}')
-
-loss_df = pd.DataFrame(cynthia_brain.history)
-loss_df.plot()
-plt.xlabel("Epochs")
-plt.ylabel("Loss")
-plt.title("Loss during Training")
-plt.show()
-
-X_n1_1 = torch.tensor([[23]], dtype=torch.float32)
-prediction = cynthia_brain(torch.tensor(scaler.transform(X_n1_1), dtype=torch.float32)).item()
-print(f'Prediction: {prediction}')
 ```
 ## Dataset Information
 
